@@ -14,8 +14,10 @@ const noteController = require("./controllers/noteController")
 //creating expree app
 
 const app = express()
+const cors = require('cors');
 //configure express app  to use json
 app.use(express.json());
+app.use(cors());
 //coect to database
 
 connectToDb();
@@ -37,18 +39,7 @@ app.get("/notes/:id", noteController.fetchNote );
 
 app.put("/notes/:id" , noteController.updateNote );
 
-app.delete("/notes/:id", async (req , res) => {
-    //get note from id
-    const noteid = req.params.id;
-
-    //delete note 
-    await Note.deleteOne({ _id: noteid });
-
-    //respond
-
-    res.json({ success: "Note Deleted SucessFully"});
-
-});
+app.delete("/notes/:id",noteController.deleteNote);
 //start our server
 
 app.listen(process.env.PORT);

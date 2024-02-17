@@ -50,9 +50,23 @@ const updateNote = async (req , res) => {
     res.json({note : note});
 }
 
+const deleteNote = async (req , res) => {
+    //get note from id
+    const noteid = req.params.id;
+
+    //delete note 
+    await Note.deleteOne({ _id: noteid });
+
+    //respond
+
+    res.json({ success: "Note Deleted SucessFully"});
+
+}
+
 module.exports = {
     fetchNote : fetchNote,
     fetchNotes : fetchNotes,
     createNote : createNote,
     updateNote : updateNote,
+    deleteNote : deleteNote,
 }
