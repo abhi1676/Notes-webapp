@@ -1,7 +1,10 @@
 import { useState,useEffect } from "react";
 import axios from "axios";
-
+import noteStore from "../stores/noteStore";
+import Notes from "../components/Notes.js";
 function App() {
+
+  const store = noteStore();
 
   //state
   const [notes,setNotes] = useState(null);
@@ -18,7 +21,7 @@ const [updateForm, setupdateForm] = useState({
 
 //useeffect
   useEffect(() => {
-    fetchNotes();
+    store.fetchNotes();
   },[]);
 
 
@@ -89,37 +92,74 @@ const [updateForm, setupdateForm] = useState({
       [name] : value,
     });
   };
+
+
+const toggleUpdate = (note) =>
+{
+  //get current note value 
+  
+
+  //set state on update form
+  setupdateForm({title : note.title , body: note.body, _id: note._id});
+}
+
+const updateNote = async(e) =>
+{ 
+  e.preventDefault();
+  const {title , body } = updateForm;
+
+  //Send the update request
+  const res = await axios.put(`http://localhost:3001/notes/${updateForm._id}`,{title, body });
+  //Update state
+  const newNotes = [...notes];
+  const noteIndex = notes.findIndex((note) => {
+    return note._id === updateForm._id;
+  });
+    
+
+  newNotes[noteIndex] = res.data.note;
+  setNotes(newNotes);
+
+
+  //clear update form state
+
+  setupdateForm({
+    _id: null,
+    title: "",
+    body: "",
+  });
+
+  
+  };
+
+
+
   return (
     <div className="App">
-      <div>
-     <h2> Notes :</h2>
-     {notes && 
-     notes.map(note => {
-      return(
-        <div key={note._id}>
-          <h3>{note.title}</h3>
-          <button onClick={() => deleteNote(note._id)}>Delete Note</button>
-          </div>
-      );
-     })}
-     </div>
+     <Notes />
 
-     <div>
+     {store.updateForm._id &&(
+
+      <div>
       <h2>Update note</h2>
-      <form action="">
-        <input onChange ={handleupdateFieldchange} value={updateForm.title} name="title" />
-        <textarea onChange ={handleupdateFieldchange} value={updateForm.body} name="body" />
+      <form onSubmit={store.updateNote}>
+        <input onChange ={store.handleupdateFieldchange} value={store.updateForm.title} name="title" />
+        <textarea onChange ={store.handleupdateFieldchange} value={store.updateForm.body} name="body" />
         <button type ="submit">Update note</button>
       </form>
      </div>
-    <div>
+     )}
+
+
+    {!store.updateForm._id && (<div>
       <h2>Create Note</h2>
-      <form onSubmit={createNote}>
-        <input onChange={updateCreateFormfield} value ={createForm.title} name="title"/>
-        <textarea onChange={updateCreateFormfield} value= {createForm.body} name="body" />
+      <form onSubmit={store.createNote}>
+        <input onChange={store.updateCreateFormfield} value ={store.createForm.title} name="title"/>
+        <textarea onChange={store.updateCreateFormfield} value= {store.createForm.body} name="body" />
         <button type="submit">Create note</button>
       </form>
     </div>
+    )}
     </div>
   );
 }

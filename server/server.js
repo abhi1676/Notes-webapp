@@ -18,7 +18,7 @@ const cors = require('cors');
 //configure express app  to use json
 app.use(express.json());
 app.use(cors());
-//coect to database
+//connect to database
 
 connectToDb();
 
