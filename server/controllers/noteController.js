@@ -2,7 +2,7 @@ const Note = require("../models/note");
 
 const fetchNotes = async (req , res) => {
     //find notes
-    const notes = await Note.find();
+    const notes = await Note.find({user: req.user._id});
     //respond
     res.json({ notes : notes })
 }
@@ -11,7 +11,7 @@ const fetchNote = async (req , res) => {
     //get id from url
     const Noteid = req.params.id;
     //find note 
-    const note = await Note.findById(Noteid);
+    const note = await Note.findOne({_id: Noteid, user: req.user._id});
 
     //respond with note
     res.json({ note : note})
@@ -28,6 +28,7 @@ const createNote = async (req , res) => {
    const note =  await Note.create({
         title : title,
         body : body,
+        user: req.user._id,
     });
 
     // respond with new note 
@@ -41,7 +42,7 @@ const updateNote = async (req , res) => {
     const title = req.body.title;
     const body = req.body.body;
     //findnote with id
-     await  Note.findByIdAndUpdate(noteid ,{
+     await Note.findOneAndUpdate({_id: noteid, user: req.user._id} ,{
         title : title ,
         body : body
     });
@@ -55,7 +56,7 @@ const deleteNote = async (req , res) => {
     const noteid = req.params.id;
 
     //delete note 
-    await Note.deleteOne({ _id: noteid });
+    await Note.deleteOne({ _id: noteid, user: req.user._id });
 
     //respond
 

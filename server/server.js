@@ -30,10 +30,6 @@ app.use(cookieParser());
 connectToDb();
 
 
-//routing
-app.get('/',(req,res) => {
-    res.json({ hello : "world"});
-});
 
 
 app.post('/signup',userController.signup);
@@ -43,17 +39,17 @@ app.get('/check-auth', requireAuth, userController.checkAuth);
 
 
 
-app.post("/notes", noteController.createNote );
+app.post("/notes",requireAuth, noteController.createNote );
 
 
-app.get("/notes", noteController.fetchNotes);
+app.get("/notes",requireAuth, noteController.fetchNotes);
 
-app.get("/notes/:id", noteController.fetchNote );
+app.get("/notes/:id",requireAuth, noteController.fetchNote );
 
 
-app.put("/notes/:id" , noteController.updateNote );
+app.put("/notes/:id" ,requireAuth, noteController.updateNote );
 
-app.delete("/notes/:id",noteController.deleteNote);
+app.delete("/notes/:id",requireAuth,noteController.deleteNote);
 //start our server
 
 app.listen(process.env.PORT);
